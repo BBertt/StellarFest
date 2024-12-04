@@ -39,9 +39,31 @@ public class UserController {
 	
 	public String validateRegister (String user_email, String user_name, String user_password, String user_role) {
 		ArrayList<User> users = getUsers();
+		
+		// Validate email to not be empty
+		if (user_email == null || user_email.trim().isEmpty()) return "email cannot be empty!";
+		
+		// Validate user name to not be empty
+		if (user_name == null || user_name.trim().isEmpty()) return "username cannot be empty!";
+		
+		// Validate email and user name must be unique
+		boolean emailUnique = true;
+		boolean nameUnique = true;
 		for (User user : users) {
-			System.out.println(user.getUser_id()+", "+user.getUser_email());
+			if (user.getUser_email().equalsIgnoreCase(user_email)) emailUnique = false;
+			if (user.getUser_name().equalsIgnoreCase(user_name)) nameUnique = false;
 		}
+		
+		if (emailUnique == false) return "email has already been taken.";
+		if (nameUnique == false) return "name has already been taken.";
+		
+		// Validate for password to not be empty and have at least 5 characters.
+		if (user_password == null || user_password.trim().isEmpty()) return "password cannot be empty!";
+		
+		if (user_password.length() < 5) return "password must be at least 5 characters!";
+		
+		// Validate that role has been chosen
+		if (user_role == null) return "role cannot be empty!";
 		
 		return null;
 	}

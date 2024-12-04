@@ -11,6 +11,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class RegisterLogin {
@@ -60,40 +61,52 @@ public class RegisterLogin {
         TextField usernameField = new TextField();
         Label passwordLabel = new Label("Password:");
         PasswordField passwordField = new PasswordField();
+        Label errorLabel = new Label();
+        errorLabel.setTextFill(Color.RED);
         
         // Create a ComboBox for user roles
         Label roleLabel = new Label("Select Role:");
         ComboBox<String> roleComboBox = new ComboBox<>();
         roleComboBox.getItems().addAll("Event Organizer", "Vendor", "Guest");
         
+        // Buttons
         Button register = new Button("Register");
-        Button loginBtn = new Button("Login Instead");
+        Label loginLabel = new Label("Already have an account? ");
+        Button loginBtn = new Button("Login");
 
-        // Add components to the register layout
+        // Create Containers for the components
         HBox emailBox = new HBox(10, emailLabel, emailField);
         HBox usernameBox = new HBox(10, usernameLabel, usernameField);
         HBox passwordBox = new HBox(10, passwordLabel, passwordField);
         HBox roleBox = new HBox(10, roleLabel, roleComboBox);
-        HBox btns = new HBox(10, register, loginBtn);
+        HBox login = new HBox(10, loginLabel, loginBtn);
         
         // Center all the components
         emailBox.setAlignment(Pos.CENTER);
         usernameBox.setAlignment(Pos.CENTER);
         passwordBox.setAlignment(Pos.CENTER);
         roleBox.setAlignment(Pos.CENTER);
-        btns.setAlignment(Pos.CENTER);
+        login.setAlignment(Pos.CENTER);
         
         // Insert all components into the main pane
-        registerPane.getChildren().addAll(emailBox, usernameBox, passwordBox, roleBox, btns);
+        registerPane.getChildren().addAll(emailBox, usernameBox, passwordBox, roleBox, register, login);
 
         // Create a scene for the register components
         Scene registerScene = new Scene(registerPane, 1000, 700);
 
-        // Event handling for Register
+        // Event handling for Register's Validation
         register.setOnAction(e -> {
             String error = uc.validateRegister(emailField.getText(), usernameField.getText(), passwordField.getText(), roleComboBox.getValue());
             if (error != null) {
-            	System.out.println(error);
+                errorLabel.setText(error);
+                if (!registerPane.getChildren().contains(errorLabel)) {
+                	registerPane.getChildren().add(3, errorLabel);
+                }
+            } 
+            else {
+                if (registerPane.getChildren().contains(errorLabel)) {
+                    registerPane.getChildren().remove(errorLabel);
+                }
             }
         });
 
