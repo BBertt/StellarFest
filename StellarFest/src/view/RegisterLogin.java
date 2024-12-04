@@ -1,45 +1,21 @@
-package client;
+package view;
 
-import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class Main extends Application{
-	
-//	Connect connect = Connect.getInstance();
-	Scene scene;
-	BorderPane borderPane;
-	Button signInBtn;
-	Button registerBtn;
-	VBox centerContent;
-	Stage primaryStage;
-	
-	public void init() {
-		borderPane = new BorderPane();
-		scene = new Scene(borderPane, 700, 700);
-		centerContent = new VBox(10);
-		
-		signInBtn = new Button("Sign In");
-		registerBtn = new Button("Register");
-	}
-	
-	public void initComponent() {
-		centerContent.getChildren().addAll(signInBtn, registerBtn);
-		borderPane.setCenter(centerContent);
-	}
-	
-	public void setEventHandling() {
-		signInBtn.setOnAction(e -> showSignInPage());
-        registerBtn.setOnAction(e -> showRegisterPage());
-	}
-	
-	private void showSignInPage() {
+public class RegisterLogin {
+    private Stage primaryStage;
+
+    public RegisterLogin(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
+
+    public void showSignInPage() {
         VBox signInPane = new VBox(10);
         Scene signInScene = new Scene(signInPane, 700, 700);
 
@@ -49,24 +25,23 @@ public class Main extends Application{
         Label passwordLabel = new Label("Password:");
         PasswordField passwordField = new PasswordField();
         Button signIn = new Button("Sign In");
-        Button backToMain = new Button("Back");
+        Button registerBtn = new Button("Register Instead");
 
         // Add components to the sign-in layout
-        signInPane.getChildren().addAll(usernameLabel, usernameField, passwordLabel, passwordField, signIn, backToMain);
+        signInPane.getChildren().addAll(usernameLabel, usernameField, passwordLabel, passwordField, signIn, registerBtn);
 
         // Event handling for Sign In
         signIn.setOnAction(e -> {
             // Add your sign-in logic here
             System.out.println("Signing in with: " + usernameField.getText());
         });
-
-        // Event handling for Back
-        backToMain.setOnAction(e -> primaryStage.setScene(scene));
+        
+        registerBtn.setOnAction(e-> showRegisterPage());
 
         primaryStage.setScene(signInScene);
     }
 
-    private void showRegisterPage() {
+    public void showRegisterPage() {
         VBox registerPane = new VBox(10);
         Scene registerScene = new Scene(registerPane, 700, 700);
 
@@ -78,10 +53,10 @@ public class Main extends Application{
         Label confirmPasswordLabel = new Label("Confirm Password:");
         PasswordField confirmPasswordField = new PasswordField();
         Button register = new Button("Register");
-        Button backToMain = new Button("Back");
+        Button loginBtn = new Button("Login Instead");
 
         // Add components to the register layout
-        registerPane.getChildren().addAll(usernameLabel, usernameField, passwordLabel, passwordField, confirmPasswordLabel, confirmPasswordField, register, backToMain);
+        registerPane.getChildren().addAll(usernameLabel, usernameField, passwordLabel, passwordField, confirmPasswordLabel, confirmPasswordField, register, loginBtn);
 
         // Event handling for Register
         register.setOnAction(e -> {
@@ -94,24 +69,8 @@ public class Main extends Application{
         });
 
         // Event handling for Back
-        backToMain.setOnAction(e -> primaryStage.setScene(scene));
+        loginBtn.setOnAction(e -> showSignInPage());
 
         primaryStage.setScene(registerScene);
     }
-
-	@Override
-	public void start(Stage primaryStage){
-		this.primaryStage = primaryStage;
-		init();
-		initComponent();
-		setEventHandling();
-		primaryStage.setScene(scene);
-		primaryStage.setTitle("StellarFest");
-		primaryStage.show();
-	}
-	
-	public static void main (String[] args) {
-		launch(args);
-	}
-
 }
