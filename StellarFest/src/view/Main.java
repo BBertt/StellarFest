@@ -3,6 +3,7 @@ package view;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -12,7 +13,7 @@ public class Main extends Application {
 
     public void init(Stage primaryStage) {
         borderPane = new BorderPane();
-        scene = new Scene(borderPane, 700, 700);
+        scene = new Scene(borderPane, 1000, 700);
         
         registerLogin = new RegisterLogin(primaryStage);
     }
