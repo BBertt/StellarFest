@@ -7,35 +7,23 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-    Scene scene;
-    BorderPane borderPane;
-    RegisterLogin registerLogin;
-
-    public void init(Stage primaryStage) {
-        borderPane = new BorderPane();
-        scene = new Scene(borderPane, 1000, 700);
-        
-        registerLogin = new RegisterLogin(primaryStage);
-    }
-
-    public void initComponent() {
-    }
-
-    public void setEventHandling() {
-    }
-
-    @Override
-    public void start(Stage primaryStage) {
-        init(primaryStage);
-        initComponent();
-        setEventHandling();
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("StellarFest");
-        primaryStage.show();
-        registerLogin.showRegisterPage();
+    private static Stage primaryStage;
+    
+    public static void redirect(Scene scene) {
+    	primaryStage.setScene(scene);
+    	primaryStage.centerOnScreen();
+    	primaryStage.setResizable(false);
+    	primaryStage.show();
     }
 
     public static void main(String[] args) {
         launch(args);
+    }
+    
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        Main.primaryStage = primaryStage;
+        primaryStage.setTitle("StellarFest");
+        new RegisterPage();
     }
 }
