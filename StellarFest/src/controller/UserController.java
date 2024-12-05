@@ -37,7 +37,23 @@ public class UserController {
 		return temp;
 	}
 	
-	public String validateRegister (String user_email, String user_name, String user_password, String user_role) {
+	public void insertUser(ArrayList<User> users, String user_email, String user_name, String user_password, String user_role) {
+		String query = "INSERT INTO users (user_email, user_name, user_password, user_role) VALUES (?,?,?,?)";
+		PreparedStatement ps = connect.prepareStatement(query);
+		
+		try {
+			ps.setString(1, user_email);
+			ps.setString(2, user_name);
+			ps.setString(3, user_password);
+			ps.setString(4, user_role);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public String registerUser (String user_email, String user_name, String user_password, String user_role) {
 		ArrayList<User> users = getUsers();
 		
 		// Validate email to not be empty
@@ -65,6 +81,7 @@ public class UserController {
 		// Validate that role has been chosen
 		if (user_role == null) return "role cannot be empty!";
 		
+		insertUser(users, user_email, user_name, user_password, user_role);
 		return null;
 	}
 }

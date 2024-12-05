@@ -96,7 +96,7 @@ public class RegisterLogin {
 
         // Event handling for Register's Validation
         register.setOnAction(e -> {
-            String error = uc.validateRegister(emailField.getText(), usernameField.getText(), passwordField.getText(), roleComboBox.getValue());
+            String error = uc.registerUser(emailField.getText(), usernameField.getText(), passwordField.getText(), roleComboBox.getValue());
             if (error != null) {
                 errorLabel.setText(error);
                 if (!registerPane.getChildren().contains(errorLabel)) {
