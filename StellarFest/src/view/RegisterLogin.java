@@ -13,6 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import util.Session;
 
 public class RegisterLogin {
     private Stage primaryStage;
@@ -24,29 +25,59 @@ public class RegisterLogin {
     }
 
     public void showSignInPage() {
-        VBox signInPane = new VBox(10);
-        Scene signInScene = new Scene(signInPane, 700, 700);
+    	// Create a VBox for the sign in layout
+        VBox loginPane = new VBox(10);
+        loginPane.setAlignment(Pos.CENTER);
 
-        // Create Sign In components
-        Label usernameLabel = new Label("Username:");
-        TextField usernameField = new TextField();
+        // Create Sign in components
+        Label title = new Label("Sign In");
+        Label emailLabel = new Label("Email:");
+        TextField emailField = new TextField();
         Label passwordLabel = new Label("Password:");
         PasswordField passwordField = new PasswordField();
-        Button signIn = new Button("Sign In");
-        Button registerBtn = new Button("Register Instead");
+        Label errorLabel = new Label();
+        errorLabel.setTextFill(Color.RED);
+     
+        // Buttons
+        Button login = new Button("login");
+        Label registerLabel = new Label("Don't have an account? ");
+        Button registerBtn = new Button("Register");
 
-        // Add components to the sign-in layout
-        signInPane.getChildren().addAll(usernameLabel, usernameField, passwordLabel, passwordField, signIn, registerBtn);
-
-        // Event handling for Sign In
-        signIn.setOnAction(e -> {
-            // Add your sign-in logic here
-            System.out.println("Signing in with: " + usernameField.getText());
-        });
+        // Create Containers for the components
+        HBox emailBox = new HBox(10, emailLabel, emailField);
+        HBox passwordBox = new HBox(10, passwordLabel, passwordField);
+        HBox register = new HBox(10, registerLabel, registerBtn);
         
-        registerBtn.setOnAction(e-> showRegisterPage());
+        // Center all the components
+        emailBox.setAlignment(Pos.CENTER);
+        passwordBox.setAlignment(Pos.CENTER);
+        register.setAlignment(Pos.CENTER);
+        
+        // Insert all components into the main pane
+        loginPane.getChildren().addAll(title, emailBox, passwordBox, login, register);
 
-        primaryStage.setScene(signInScene);
+        // Create a scene for the register components
+        Scene loginScene = new Scene(loginPane, 1000, 700);
+
+        // Event handling for Register's Validation
+        login.setOnAction(e -> {
+            String error = uc.login(emailField.getText(), passwordField.getText());
+            if (error != null) {
+                errorLabel.setText(error);
+                if (!loginPane.getChildren().contains(errorLabel)) {
+                	loginPane.getChildren().add(3, errorLabel);
+                }
+            } 
+            else {
+                UserProfile up = new UserProfile(primaryStage);
+                up.showProfilePage();
+            }
+        });
+
+        // Event handling for Back
+        registerBtn.setOnAction(e -> showRegisterPage());
+
+        primaryStage.setScene(loginScene);
     }
 
     public void showRegisterPage() {
@@ -55,6 +86,7 @@ public class RegisterLogin {
         registerPane.setAlignment(Pos.CENTER);
 
         // Create Register components
+        Label title = new Label("Register");
         Label emailLabel = new Label("Email:");
         TextField emailField = new TextField();
         Label usernameLabel = new Label("Username:");
@@ -89,24 +121,25 @@ public class RegisterLogin {
         login.setAlignment(Pos.CENTER);
         
         // Insert all components into the main pane
-        registerPane.getChildren().addAll(emailBox, usernameBox, passwordBox, roleBox, register, login);
+        registerPane.getChildren().addAll(title, emailBox, usernameBox, passwordBox, roleBox, register, login);
 
         // Create a scene for the register components
         Scene registerScene = new Scene(registerPane, 1000, 700);
 
         // Event handling for Register's Validation
         register.setOnAction(e -> {
-            String error = uc.registerUser(emailField.getText(), usernameField.getText(), passwordField.getText(), roleComboBox.getValue());
+            String error = uc.checkRegisterInput(emailField.getText(), usernameField.getText(), passwordField.getText(), roleComboBox.getValue());
             if (error != null) {
                 errorLabel.setText(error);
                 if (!registerPane.getChildren().contains(errorLabel)) {
-                	registerPane.getChildren().add(3, errorLabel);
+                	registerPane.getChildren().add(5, errorLabel);
                 }
             } 
             else {
-                if (registerPane.getChildren().contains(errorLabel)) {
-                    registerPane.getChildren().remove(errorLabel);
-                }
+//                if (registerPane.getChildren().contains(errorLabel)) {
+//                    registerPane.getChildren().remove(errorLabel);
+//                }
+            	showSignInPage();
             }
         });
 
