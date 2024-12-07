@@ -106,7 +106,7 @@ public class LoginPage implements EventHandler<ActionEvent>{
                 }
             } 
             else {
-            	Main.redirect(new UserProfile().scene);
+            	Main.redirect(new ProfilePage().scene);
             }
 		}
 		else if (e.getSource() == registerBtn) {

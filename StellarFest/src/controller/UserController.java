@@ -101,6 +101,66 @@ public class UserController {
 		return user;
 	}
 	
+	// Function to change the user's details. (happens after checkRegisterInput.) (oldPassword is not needed.)
+	public void changeProfile (String email, String name, String newPassword) {
+		String query;
+		User user = Session.getUser();
+		String user_id = user.getUser_id();
+		
+		if (email != null) {
+			query = "UPDATE users SET user_email = ? WHERE user_id = ?";
+			PreparedStatement ps = connect.prepareStatement(query);
+			
+			try {
+				ps.setString(1, email);
+				ps.setString(2, user_id);
+				ps.executeUpdate();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			// update the user session details
+			user.setUser_email(email);
+			Session.setUser(user);
+		}
+		if (name != null) {
+			query = "UPDATE users SET user_name = ? WHERE user_id = ?";
+			PreparedStatement ps = connect.prepareStatement(query);
+			
+			try {
+				ps.setString(1, name);
+				ps.setString(2, user_id);
+				ps.executeUpdate();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			// update the user session details
+			user.setUser_name(name);
+			Session.setUser(user);
+		}
+		if (newPassword != null) {
+			query = "UPDATE users SET user_password = ? WHERE user_id = ?";
+			PreparedStatement ps = connect.prepareStatement(query);
+			
+			try {
+				ps.setString(1, newPassword);
+				ps.setString(2, user_id);
+				ps.executeUpdate();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			// update the user session details
+			user.setUser_password(newPassword);
+			Session.setUser(user);
+		}
+		
+	}
+	
 	// Function to insert a new user to the database and create new user session. (id is also passed since id must be in string.)
 	public void register (String user_id, String email, String name, String password, String role) {
 		String query = "INSERT INTO users (user_id, user_email, user_name, user_password, user_role) VALUES (?,?,?,?,?)";
@@ -181,6 +241,68 @@ public class UserController {
 	
 	// Function to change user's details.
 	public String checkChangeProfileInput(String email, String name, String oldPassword, String newPassword) {
+		ArrayList<User> users = getUsers();
+		User user = Session.getUser();
 		
+		// To check that at least one field is changed.
+		boolean isChanged = false;
+		
+		boolean emailUnique = true;
+		boolean nameUnique = true;
+		
+		// Validate email to not be empty
+		if (email == null || email.trim().isEmpty()) return "Email cannot be empty!";
+		
+		// Validate name to not be empty
+		if (name == null || name.trim().isEmpty()) return "Name cannot be empty!";
+		
+		// Validate current password not to be empty
+		if (oldPassword == null || oldPassword.trim().isEmpty()) return "Current Password cannot be empty.";
+		
+		// Validate current password to be valid
+		if (!oldPassword.equals(user.getUser_password())) return "Current Password does not match.";
+		
+		// Change the user details for each fields that are different from current details.
+		if (!(email == null || email.trim().isEmpty()) && !(email.equals(user.getUser_email()))) {
+			for (User u : users) {
+				if (u.getUser_email().equalsIgnoreCase(email)) {
+					emailUnique = false; 
+					break;
+				}
+			}
+			
+			if (emailUnique == false) return "Email has already been taken.";
+			
+			// update the user email details.
+			changeProfile(email, null, null);
+			isChanged = true;
+		}
+		if (!(name == null || name.trim().isEmpty()) && !(name.equals(user.getUser_name()))) {
+			for (User u : users) {
+				if (u.getUser_name().equalsIgnoreCase(name)) {
+					nameUnique = false;
+					break;
+				}
+			}
+			
+			if (nameUnique == false) return "Name has already been taken.";
+			
+			// update the user name details.
+			changeProfile(null, name, null);
+			isChanged = true;
+		}
+		if (!(newPassword == null || newPassword.trim().isEmpty())) {
+			if (newPassword.length() < 5) return "New password must be at least 5 characters!";
+			
+			// update the user password details.
+			if (!newPassword.equals(oldPassword)) {
+				changeProfile(null, null, newPassword);
+				isChanged = true;
+			}
+		}
+		
+		if (isChanged == false) return "Minimum of 1 field needs to be changed.";
+		
+		return null;
 	}
 }

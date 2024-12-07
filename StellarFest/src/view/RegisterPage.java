@@ -131,7 +131,7 @@ public class RegisterPage implements EventHandler<ActionEvent>{
 //                if (registerPane.getChildren().contains(errorLabel)) {
 //                    registerPane.getChildren().remove(errorLabel);
 //                }
-            	Main.redirect(new LoginPage().scene);
+            	new RegisterPage();
             }
 		}
 		else if (e.getSource() == loginBtn) {
