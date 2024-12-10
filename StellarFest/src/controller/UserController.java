@@ -60,7 +60,15 @@ public class UserController {
 	            String user_name = connect.rs.getString("user_name");
 	            String user_password = connect.rs.getString("user_password");
 	            String user_role = connect.rs.getString("user_role");
-	            user = new User(user_id, user_email, user_name, user_password, user_role);
+	            
+	            // If the user is admin, then only return the user's attributes.
+	            if (connect.rs.getString("user_role").equals("Admin")) {
+	            	return new User(user_id, user_email, user_name, user_password, user_role);
+	            }
+	            else if (connect.rs.getString("user_role").equals("Event Organizer")) {
+	            	query = "SELECT * FROM eventorganizers WHERE user_id = ?";
+	            	ps = connect.prepareStatement(query);
+	            }
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
