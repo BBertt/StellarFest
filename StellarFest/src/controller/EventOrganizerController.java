@@ -13,24 +13,10 @@ import util.Session;
 public class EventOrganizerController {
 	Connect connect = Connect.getInstance();
 	
-	// Function to add new events to the database.
+	// Function to add new events to the database. (akan memanggil createEvent() dari EventController).
 	public void createEvent(String eventName, String date, String location, String description, String organizerID) {
-		String query = "INSERT INTO events (user_id, user_email, user_name, user_password, user_role) VALUES (?,?,?,?,?)";
-		PreparedStatement ps = connect.prepareStatement(query);
-		
-		try {
-			ps.setString(1, user_id);
-			ps.setString(2, email);
-			ps.setString(3, name);
-			ps.setString(4, password);
-			ps.setString(5, role);
-			ps.executeUpdate();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		Session.setUser(new User(user_id, email, name, password, role));
+		EventController ec = new EventController();
+		ec.createEvent(eventName, date, location, description, organizerID);
 	}
 	
 	// Function to check create new events input.
@@ -64,6 +50,8 @@ public class EventOrganizerController {
 		if (location.length() < 5) return "Location must be at least 5 characters.";
 		
 		if (description.length() > 200) return "Desription cannot be more than 200 characters.";
+		
+		createEvent(eventName, date, location, description, Session.getUser().getUser_id());
 		
 		return null;
 	}

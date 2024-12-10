@@ -71,8 +71,10 @@ public class EventOrganizerPage implements EventHandler<ActionEvent>{
 	}
 
 	@Override
-	public void handle(ActionEvent arg0) {
-		
+	public void handle(ActionEvent e) {
+		if (e.getSource() == createEvent) {
+			new CreateEventPage();
+		}
 	}
 
 }

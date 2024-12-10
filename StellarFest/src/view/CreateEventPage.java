@@ -107,9 +107,7 @@ public class CreateEventPage implements EventHandler<ActionEvent>{
                 }
             } 
             else {
-                if (root.getChildren().contains(errorLabel)) {
-                    root.getChildren().remove(errorLabel);
-                }
+            	new EventOrganizerPage();
             }
 		}
 		

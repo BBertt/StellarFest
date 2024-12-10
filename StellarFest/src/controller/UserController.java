@@ -5,7 +5,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import database.Connect;
+import model.EventOrganizer;
+import model.Guest;
 import model.User;
+import model.Vendor;
 import util.Session;
 
 public class UserController {
@@ -41,39 +44,95 @@ public class UserController {
 	
 	// Function to get a single user by Email (Used to help login.)
 	public User getUserByEmail(String email) {
+		String user_id = null, user_email = null, user_name = null, user_password = null, user_role = null;
 		User user = null;
-		String query = "SELECT * FROM users WHERE user_email = ?";
-		PreparedStatement ps = connect.prepareStatement(query);
 		
+		String query = "SELECT * FROM users WHERE user_email = ?";
+		PreparedStatement ps1 = connect.prepareStatement(query);
 		try {
-			ps.setString(1, email);
-			connect.rs = ps.executeQuery();
+			ps1.setString(1, email);
+			connect.rs = ps1.executeQuery();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 		try {
 			if (connect.rs.next()) {
-				String user_id = connect.rs.getString("user_id");
-	            String user_email = connect.rs.getString("user_email");
-	            String user_name = connect.rs.getString("user_name");
-	            String user_password = connect.rs.getString("user_password");
-	            String user_role = connect.rs.getString("user_role");
-	            
-	            // If the user is admin, then only return the user's attributes.
-	            if (connect.rs.getString("user_role").equals("Admin")) {
-	            	return new User(user_id, user_email, user_name, user_password, user_role);
-	            }
-	            else if (connect.rs.getString("user_role").equals("Event Organizer")) {
-	            	query = "SELECT * FROM eventorganizers WHERE user_id = ?";
-	            	ps = connect.prepareStatement(query);
-	            }
+				user_id = connect.rs.getString("user_id");
+	            user_email = connect.rs.getString("user_email");
+	            user_name = connect.rs.getString("user_name");
+	            user_password = connect.rs.getString("user_password");
+	            user_role = connect.rs.getString("user_role");
+			}
+			else {
+				return null;
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		// If the user is admin, then only return the user's attributes.
+        if (user_role.equals("Admin")) {
+        	return new User(user_id, user_email, user_name, user_password, user_role);
+        }
+        // If the user is Event Organizer, then return the user's attributes and eventorganizers attributes.
+        else if (user_role.equals("Event Organizer")) {
+        	query = "SELECT * FROM eventorganizers WHERE user_id = ?";
+        	PreparedStatement ps2 = connect.prepareStatement(query);
+        	try {
+				ps2.setString(1, user_id);
+				connect.rs = ps2.executeQuery();
+				
+				ArrayList<String> events_created = new ArrayList<String>();
+	        	while (connect.rs.next()) {
+	        		events_created.add(connect.rs.getString("events_created"));
+	        	}
+	        	user = new EventOrganizer(user_id, user_email, user_name, user_password, user_role, events_created);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	
+        }
+        // If the user is Vendor, then return the user's attributes and Vendor attributes.
+        else if (user_role.equals("Vendor")) {
+        	query = "SELECT * FROM vendors WHERE user_id = ?";
+        	PreparedStatement ps3 = connect.prepareStatement(query);
+        	try {
+				ps3.setString(1, user_id);
+				connect.rs = ps3.executeQuery();
+				
+	        	ArrayList<String> accepted_invitations = new ArrayList<String>();
+	        	while (connect.rs.next()) {
+	        		accepted_invitations.add(connect.rs.getString("accepted_invitations"));
+	        	}
+	        	user = new Vendor(user_id, user_email, user_name, user_password, user_role, accepted_invitations);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	
+        }
+        // If the user is Guest, then return the user's attributes and Guest attributes.
+        else if (user_role.equals("Guest")) {
+        	query = "SELECT * FROM guests WHERE user_id = ?";
+       
+        	try (PreparedStatement ps = connect.prepareStatement(query)){
+				ps.setString(1, user_id);
+				connect.rs = ps.executeQuery();
+				
+	        	ArrayList<String> accepted_invitations = new ArrayList<String>();
+	        	while (connect.rs.next()) {
+	        		accepted_invitations.add(connect.rs.getString("accepted_invitations"));
+	        	}
+	        	user = new Guest(user_id, user_email, user_name, user_password, user_role, accepted_invitations);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	
+        }
 		
 		return user;
 	}
@@ -202,9 +261,12 @@ public class UserController {
 		// Validate email and user name must be unique
 		boolean emailUnique = true;
 		boolean nameUnique = true;
-		for (User user : users) {
-			if (user.getUser_email().equalsIgnoreCase(email)) emailUnique = false;
-			if (user.getUser_name().equalsIgnoreCase(name)) nameUnique = false;
+		
+		if (!users.isEmpty()) {
+			for (User user : users) {
+				if (user.getUser_email().equalsIgnoreCase(email)) emailUnique = false;
+				if (user.getUser_name().equalsIgnoreCase(name)) nameUnique = false;
+			}
 		}
 		
 		if (emailUnique == false) return "email has already been taken.";
@@ -219,7 +281,12 @@ public class UserController {
 		if (role == null) return "role cannot be empty!";
 		
 		// Getting the string id of the latest user and adding 1 for the next user.
-		int user_id = Integer.parseInt(users.get(users.size()-1).getUser_id()) + 1;
+		int user_id;
+		if (users.isEmpty()) user_id = 1;
+		else {
+			user_id = Integer.parseInt(users.get(users.size()-1).getUser_id()) + 1;
+		}
+		
 		register(String.valueOf(user_id), email, name, password, role);
 		
 		return null;
