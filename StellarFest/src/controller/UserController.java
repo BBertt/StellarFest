@@ -380,4 +380,9 @@ public class UserController {
 		
 		return null;
 	}
+	
+	// To logout a user, removing their session.
+	public void logout() {
+		Session.clearSession();
+	}
 }

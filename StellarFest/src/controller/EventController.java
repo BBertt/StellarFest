@@ -11,7 +11,7 @@ import model.User;
 public class EventController {
 	Connect connect = Connect.getInstance();
 	
-	// Function to get all the events (used to help with creating id).
+	// Function to get all the events (used to help with creating id & for ViewEventsPage's table).
 	public ArrayList<Event> getEvents() {
 		ArrayList<Event> temp = new ArrayList<Event>();
 		String query = "SELECT * FROM events";

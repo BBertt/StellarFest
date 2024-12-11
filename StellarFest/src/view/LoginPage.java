@@ -80,6 +80,7 @@ public class LoginPage implements EventHandler<ActionEvent>{
     
     private void setStyle () {
     	errorLabel.setTextFill(Color.RED);
+    	title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
     }
     
  // Event handling for Register's Validation

@@ -31,9 +31,12 @@ public class CreateEventPage implements EventHandler<ActionEvent>{
 	private HBox locationBox;
 	private HBox descBox;
 	
+	private Label title;
 	private Label errorLabel;
 	
+	private Button homeBtn;
 	private Button submitBtn;
+	private HBox btnBox;
 	
 	private EventOrganizerController eoc;
 	
@@ -54,9 +57,12 @@ public class CreateEventPage implements EventHandler<ActionEvent>{
 		locationBox = new HBox(10);
 		descBox = new HBox(10);
 		
+		title = new Label("Create New Event");
 		errorLabel = new Label("");
 		
+		homeBtn = new Button("Home");
 		submitBtn = new Button("Submit");
+		btnBox = new HBox(10);
 		
 		scene = new Scene(root, 1000, 700);
 		
@@ -70,21 +76,25 @@ public class CreateEventPage implements EventHandler<ActionEvent>{
 		dateBox.getChildren().addAll(dateLabel, dateField);
 		locationBox.getChildren().addAll(locationLabel, locationField);
 		descBox.getChildren().addAll(descLabel, descField);
+		btnBox.getChildren().addAll(homeBtn, submitBtn);
 		
 		nameBox.setAlignment(Pos.CENTER);
 		dateBox.setAlignment(Pos.CENTER);
 		locationBox.setAlignment(Pos.CENTER);
 		descBox.setAlignment(Pos.CENTER);
+		btnBox.setAlignment(Pos.CENTER);
 		
-		root.getChildren().addAll(nameBox, dateBox, locationBox, descBox, submitBtn);
+		root.getChildren().addAll(title, nameBox, dateBox, locationBox, descBox, btnBox);
 	}
 	
 	private void setStyle() {
 		errorLabel.setTextFill(Color.RED);
+		title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
 	}
 	
 	private void events() {
 		submitBtn.setOnAction(e -> handle(e));
+		homeBtn.setOnAction(e -> handle(e));
 	}
 	public CreateEventPage() {
 		init();
@@ -109,6 +119,9 @@ public class CreateEventPage implements EventHandler<ActionEvent>{
             else {
             	new EventOrganizerPage();
             }
+		}
+		else if (e.getSource() == homeBtn) {
+			new EventOrganizerPage();
 		}
 		
 	}
